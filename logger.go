@@ -46,9 +46,9 @@ func (l *Logger) Log(r *http.Request, w http.ResponseWriter) {
 }
 
 type Message struct {
-	TS     time.Time
-	Text   string
-	Binary interface{}
+	TS     time.Time   `json:"ts,omitempty"`
+	Text   string      `json:"text,omitempty"`
+	Binary interface{} `json:"binary,omitempty"`
 }
 
 func (l *Logger) Remotef(format string, args ...interface{}) {
