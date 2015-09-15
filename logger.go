@@ -46,7 +46,7 @@ func (l *Logger) Log(r *http.Request, w http.ResponseWriter) {
 }
 
 type Message struct {
-	TS     time.Time   `json:"ts,omitempty"`
+	TS     int64       `json:"ts,omitempty"`
 	Text   string      `json:"text,omitempty"`
 	Binary interface{} `json:"binary,omitempty"`
 }
@@ -54,7 +54,7 @@ type Message struct {
 func (l *Logger) Remotef(format string, args ...interface{}) {
 	for _, w := range l.w {
 		msg := &Message{
-			TS:   time.Now(),
+			TS:   time.Now().UnixNano(),
 			Text: fmt.Sprintf(format, args...),
 		}
 		data, _ := json.Marshal(msg)
