@@ -14,9 +14,9 @@ var upgrader = websocket.Upgrader{
 }
 
 type Socket struct {
-	R    <-chan string
+	R    <-chan []byte
 	RE   <-chan error
-	W    chan<- string
+	W    chan<- []byte
 	WE   chan<- error
 	Addr net.Addr
 }
@@ -25,7 +25,7 @@ func done(conn *websocket.Conn, cc int, msg string) {
 	conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(cc, msg), time.Time{})
 }
 
-func read(conn *websocket.Conn, rc chan string, rec chan error) {
+func read(conn *websocket.Conn, rc chan []byte, rec chan error) {
 	defer conn.Close()
 	for {
 		t, p, err := conn.ReadMessage()
@@ -34,12 +34,12 @@ func read(conn *websocket.Conn, rc chan string, rec chan error) {
 			return
 		}
 		if t == websocket.TextMessage {
-			rc <- string(p)
+			rc <- p
 		}
 	}
 }
 
-func write(conn *websocket.Conn, wc chan string, rec chan error, wec chan error) {
+func write(conn *websocket.Conn, wc chan []byte, rec chan error, wec chan error) {
 	defer conn.Close()
 	for {
 		select {
@@ -68,9 +68,9 @@ func WebSocket(r *http.Request, w http.ResponseWriter) (*Socket, error) {
 	}
 
 	// Make channels.
-	rc := make(chan string)
+	rc := make(chan []byte)
 	rec := make(chan error)
-	wc := make(chan string)
+	wc := make(chan []byte)
 	wec := make(chan error)
 	cs := &Socket{rc, rec, wc, wec, conn.RemoteAddr()}
 
