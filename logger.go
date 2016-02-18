@@ -45,9 +45,7 @@ func (w *RemoteWriter) Handler(rw http.ResponseWriter, r *http.Request) {
 
 func (w *RemoteWriter) Write(p []byte) (n int, err error) {
 	for _, w := range w.w {
-		go func() {
-			w <- p
-		}()
+		go func() { w <- p }()
 	}
 	return os.Stderr.Write(p)
 }
